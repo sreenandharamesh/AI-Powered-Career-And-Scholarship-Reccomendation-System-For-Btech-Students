@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerScholar - Career Role Predictor</title>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://www.msudenver.edu/wp-content/uploads/2024/08/Sub-Banner_OL-01.webp') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding-top: 80px;
+            position: relative;
+        }
+
+        /* Overlay to improve contrast */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3); /* Slight dark overlay */
+            z-index: -1;
+        }
+
+        /* Navbar Styling */
+        header {
+            background: #ffffff;
+            padding: 15px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003366;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links li {
+            display: inline;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #003366;
+            font-weight: bold;
+            padding: 8px 12px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .nav-links a:hover {
+            background: #003366;
+            color: white;
+            border-radius: 5px;
+        }
+
+        /* Centered & Styled Container */
+        .container {
+            max-width: 700px;
+            background: #f0f4f8;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            margin: 50px auto;
+            text-align: left;
+        }
+
+        /* Heading */
+        .container h2 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        /* Grid Layout for Inputs */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns for side-by-side labels */
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Labels */
+        label {
+            font-weight: bold;
+            color: #333;
+            display: block;
+        }
+
+        /* Select Dropdown */
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: white;
+            font-size: 16px;
+        }
+
+        /* Predict Button */
+        button {
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.03);
+        }
+
+        /* Prediction Result Styling */
+        .prediction-result {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr; /* Stacks fields on small screens */
+            }
+        }
+
+    </style>
+    
+</head>
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="logo">🎓 <span>CareerScholar</span></div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('career') }}">Career</a></li>
+            <li><a href="{{ url_for('index') }}">Scholarships</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+    </header>
+    <div class="container">
+        <h2>Career Role Predictor</h2>
+        <form action="/predict" method="POST">
+            <div class="grid">
+                <label>Database Fundamentals:</label>
+                <select name="Database Fundamentals">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Computer Architecture:</label>
+                <select name="Computer Architecture">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Distributed Computing Systems:</label>
+                <select name="Distributed Computing Systems">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Cyber Security:</label>
+                <select name="Cyber Security">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Networking:</label>
+                <select name="Networking">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Software Development:</label>
+                <select name="Software Development">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Programming Skills:</label>
+                <select name="Programming Skills">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Project Management:</label>
+                <select name="Project Management">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Computer Forensics Fundamentals:</label>
+                <select name="Computer Forensics Fundamentals">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Technical Communication:</label>
+                <select name="Technical Communication">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>AI & ML:</label>
+                <select name="AI ML">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Software Engineering:</label>
+                <select name="Software Engineering">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Business Analysis:</label>
+                <select name="Business Analysis">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Communication Skills:</label>
+                <select name="Communication skills">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Data Science:</label>
+                <select name="Data Science">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Troubleshooting Skills:</label>
+                <select name="Troubleshooting skills">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+                <label>Graphics Designing:</label>
+                <select name="Graphics Designing">
+                    <option>Professional</option>
+                    <option>Intermediate</option>
+                    <option>Beginner</option>
+                    <option>Not Interested</option>
+                </select>
+            </div>
+            <button type="submit">Predict Career Role</button>
+        </form>
+    </div>
+</body>
+</html>

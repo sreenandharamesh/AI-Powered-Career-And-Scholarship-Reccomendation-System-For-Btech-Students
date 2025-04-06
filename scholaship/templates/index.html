@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dbfj.css') }}">
+</head>
+<body>
+    
+    <header>
+        <nav class="navbar">
+            <div class="logo">🎓 <span>CareerScholar</span></div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('career') }}">Career</a></li>
+                <li><a href="{{ url_for('index') }}">Scholarships</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <aside>
+            <h2>Optional Filters</h2>
+            <form id="filters-form" action="/recommend" method="POST">
+                <input type="text" id="educational_qualification" placeholder="Educational Qualification">
+                <input type="text" id="age" placeholder="Age">
+                <input type="text" id="category" placeholder="Category">
+                <input type="text" id="gender" placeholder="Gender">
+                <input type="text" id="marks" placeholder="Marks in percentage">
+                <input type="text" id="qualifications" placeholder="Qualifications">
+                <input type="text" id="income" placeholder="Family Income">
+                <input type="text" id="disability" placeholder="Disability status">
+                <button type="submit" id="apply-filters" class="apply">Apply</button>
+                <button type="button" id="clear-filters" class="clear">Clear</button>
+            </form>
+        </aside>
+
+        <section id="scholarship-container">
+            <div id="scholarship-list"></div>
+            <div id="load-more-container">
+                <button id="load-more" style="display:none;">Load More</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Handle form submission
+        document.getElementById('filters-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Collect values from all input fields
+            const educationalQualification = document.getElementById('educational_qualification').value;
+            const age = document.getElementById('age').value;
+            const category = document.getElementById('category').value;
+            const gender = document.getElementById('gender').value;
+            const marks = document.getElementById('marks').value;
+            const qualifications = document.getElementById('qualifications').value;
+            const income = document.getElementById('income').value;
+            const disability = document.getElementById('disability').value;
+
+            // Combine all values into a single string (user_input)
+            const userInput = [
+                educationalQualification,
+                age,
+                category,
+                gender,
+                marks,
+                qualifications,
+                income,
+                disability
+            ].filter(Boolean).join(' '); // Remove empty values and join with spaces
+
+            // Submit the form data to the /recommend route
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user_input=${encodeURIComponent(userInput)}`
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect to the results page
+                } else {
+                    return response.json(); // Handle JSON response if not redirected
+                }
+            })
+            .then(data => {
+                if (data) {
+                    console.log(data); // Log the response data
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        // Clear all input fields
+        document.getElementById('clear-filters').addEventListener('click', function() {
+            document.querySelectorAll('#filters-form input').forEach(input => input.value = '');
+        });
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

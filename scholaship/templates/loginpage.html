@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CareerScholar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("loginForm").onsubmit = async function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                let formData = new FormData(this);
+                let jsonData = {};
+                formData.forEach((value, key) => { jsonData[key] = value; });
+
+                let response = await fetch("{{ url_for('login') }}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(jsonData)
+                });
+
+                let result = await response.json();
+                let messageElement = document.getElementById("message");
+
+                if (response.ok) {
+                    messageElement.style.color = "green";
+                    messageElement.innerHTML = "Login successful! Redirecting...";
+                    setTimeout(() => { window.location.href = "{{ url_for('home') }}"; }, 2000);
+                } else {
+                    messageElement.style.color = "red";
+                    messageElement.innerHTML = result.error || "Login failed.";
+                }
+            };
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">CareerScholar</div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('career') }}">Career</a></li>
+                <li><a href="{{ url_for('index') }}">Scholarships</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="image-section">
+            <div class="overlay"></div>
+        </div>
+
+        <div class="login-section">
+            <h1>CAREERSCHOLAR</h1>
+            <p>Education unlocks doors—scholarships light the way!</p>
+
+            <p id="message"></p> <!-- Success/Error message here -->
+
+            <form id="loginForm" method="POST">
+                <!-- Email -->
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <!-- Password -->
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required minlength="6">
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="remember-forgot">
+                    <label><input type="checkbox" name="remember"> Remember me</label>
+                    <a href="#">Forgot your password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <input type="submit" class="btn" value="Sign In">
+                <p class="create-account"><a href="{{ url_for('register_page') }}">Create an account</a></p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Results</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            color: rgb(19, 24, 121);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003366;
+        }
+
+        header .logo span {
+            margin-left: 0.5rem;
+        }
+
+        header nav a {
+            text-decoration: none;
+            color: #003366;
+            font-weight: bold;
+            padding: 8px 12px;
+            transition: 0.3s ease-in-out;
+        }
+
+        header nav a:hover {
+            background: #003366;
+            color: white;
+            border-radius: 5px;
+        }
+
+        /* Main Content Styles */
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        main h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #007bff;
+            text-align: center;
+        }
+
+        /* Scholarship Card Styles */
+        #scholarship-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            background-blend-mode: color-burn;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin: 0 0 1rem;
+            color: #007bff;
+        }
+
+        .card p {
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .card p strong {
+            color: #333;
+        }
+
+        /* Load More Button Styles */
+        #load-more {
+            display: block;
+            margin: 2rem auto;
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #load-more:hover {
+            background-color: #0056b3;
+        }
+
+        #load-more:active {
+            background-color: #004080;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            header nav {
+                margin-top: 1rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            #scholarship-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">🎓 <span>CareerScholar</span></div>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('career') }}">Career</a>
+            <a href="{{ url_for('index') }}">Scholarships</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Recommended Scholarships</h1>
+        <div id="scholarship-list">
+            {% for scholarship in recommendations %}
+                <div class="card">
+                    <h3>{{ scholarship['Scholarship Name'] }}</h3>
+                    <p><strong>Provider:</strong> {{ scholarship['Provider'] if scholarship['Provider'] else "N/A" }}</p>
+                    <p><strong>Eligibility:</strong> {{ scholarship['Eligibility'] if scholarship['Eligibility'] else "N/A" }}</p>
+                    <p><strong>Amount:</strong> {{ scholarship['Amount'] if scholarship['Amount'] else "N/A" }}</p>
+                    
+                </div>
+            {% endfor %}
+        </div>
+        <button id="load-more">Load More</button>
+    </main>
+
+    <script>
+        // Parse the recommendations JSON string into a JavaScript array
+        let scholarships = JSON.parse('{{ recommendations | tojson | safe }}');
+        console.log(scholarships); // Debugging: Check the parsed data in the console
+
+        let visibleCount = 5; // Number of scholarships to show initially
+
+        // Function to display scholarships
+        function displayScholarships() {
+            const scholarshipList = document.getElementById('scholarship-list');
+            scholarshipList.innerHTML = ''; // Clear current list
+
+            // Display scholarships up to the visibleCount
+            scholarships.slice(0, visibleCount).forEach(scholarship => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${scholarship['Scholarship Name']}</h3>
+                    <p><strong>Provider:</strong> ${scholarship['Provider'] || "N/A"}</p>
+                    <p><strong>Eligibility:</strong> ${scholarship['Eligibility'] || "N/A"}</p>
+                    <p><strong>Amount:</strong> ${scholarship['Amount'] || "N/A"}</p>
+                    
+                `;
+                scholarshipList.appendChild(card);
+            });
+
+            // Hide "Load More" button if all scholarships are visible
+            if (visibleCount >= scholarships.length) {
+                document.getElementById('load-more').style.display = 'none';
+            }
+        }
+
+        // Initial display of scholarships
+        displayScholarships();
+
+        // Add event listener to the "Load More" button
+        document.getElementById('load-more').addEventListener('click', function() {
+            visibleCount += 5; // Increase the number of visible scholarships
+            displayScholarships(); // Update the displayed scholarships
+        });
+    </script>
+    
+</body>
+</html>

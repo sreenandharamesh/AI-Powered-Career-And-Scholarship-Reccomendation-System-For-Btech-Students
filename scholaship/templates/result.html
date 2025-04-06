@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-top: 70px; /* Prevent content from hiding under navbar */
+            background: url('https://andersonarchival.com/wp-content/uploads/2020/05/digital-books2-1030x473.jpg') no-repeat center center/cover;
+        }
+        header {
+            background: #ffffff;
+            padding: 15px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003366;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links li {
+            display: inline;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #003366;
+            font-weight: bold;
+            padding: 8px 12px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .nav-links a:hover {
+            background: #003366;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            margin: 30px auto;
+            text-align: center;
+        }
+        .container h2 {
+            color: #333;
+            font-size: 24px;
+        }
+        .result-section {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .result-section h3 {
+            color: #007BFF;
+        }
+        .result-section p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .result-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .result-section ul li {
+            margin: 10px 0;
+        }
+        .result-section ul li a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .result-section ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">🎓 <span>CareerScholar</span></div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('career') }}">Career</a></li>
+                <li><a href="{{ url_for('index') }}">Scholarships</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>Career Prediction Result</h2>
+        <div class="result-section">
+            <h3>Predicted Role: {{ prediction }}</h3>
+            <p><strong>Description:</strong> {{ career_info.split('Courses:')[0].replace('Description: ', '') }}</p>
+            <p><strong>Courses to Start with:</strong></p>
+            <ul>
+                {% for course in career_info.split('Courses:')[1].split('Projects:')[0].strip().split('\n') %}
+                    {% if course and ' - ' in course %}
+                        {% set course_parts = course.split(' - ') %}
+                        {% set course_name = course_parts[0].strip() %}
+                        {% set course_platform = course_parts[1].strip() %}
+                        {% set course_link = course_parts[2].strip().replace('<', '').replace('>', '') %}
+                        <li>
+                            <strong>{{ course_name }}</strong> (Platform: {{ course_platform }}) - 
+                            <a href="{{ course_link }}" target="_blank">Enroll Now</a>
+                        </li>
+                    {% elif course %}
+                        <li>{{ course.strip() }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <p><strong>Try out these Projects:</strong></p>
+            <ul>
+                {% for project in career_info.split('Projects:')[1].strip().split('\n') %}
+                    {% if project and ' - ' in project %}
+                        {% set project_parts = project.split(' - ') %}
+                        {% set project_name = project_parts[0].strip() %}
+                        {% set project_platform = project_parts[1].strip() %}
+                        {% set project_link = project_parts[2].strip().replace('<', '').replace('>', '') %}
+                        <li>
+                            <strong>{{ project_name }}</strong> (Platform: {{ project_platform }}) - 
+                            <a href="{{ project_link }}" target="_blank">Get Started</a>
+                        </li>
+                    {% elif project %}
+                        <li>{{ project.strip() }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        <a href="/career" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">Go Back</a>
+    </div>
+</body>
+    
